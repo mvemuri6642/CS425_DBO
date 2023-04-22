@@ -1,0 +1,54 @@
+<html>
+	<head>
+		<style>
+			table {
+			  border-collapse: separate;
+			  border-spacing: 10px;
+			}
+			
+			td {
+			  padding: 10px;
+			}
+			</style>
+			<script>
+				function goBack() {
+					window.history.back();
+			  	}
+			</script>
+
+	</head>
+	<body>
+		<main>
+			<h2>Bookings</h2>
+			
+			<table>
+				<thead>
+					<tr>
+						<th>Booking ID</th>
+						<th>Email</th><td></td><td></td>
+						<th>Property ID</th>
+						<th>Credit Card</th>
+					</tr>
+				</thead>
+				
+				<tbody>
+					{%for row in data%}
+						<tr>
+							<td>{{row[0]}}</td>
+							<td>{{row[1]}}</td><td></td><td></td>
+							<td>{{row[2]}}</td>
+							<td>{{row[3]}}</td>
+						</tr>
+					{%endfor%}
+				</tbody>
+				
+	
+				
+				
+			</table>
+		</main>
+		<button onclick="goBack()">Go Back</button>
+
+	</body>
+    
+</html>

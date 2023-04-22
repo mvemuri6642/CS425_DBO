@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login Page</title>
+    
+    <style>
+        /* Center the login form */
+        form {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+        }
+      </style>
+  </head>
+  <body>
+    <center><h1>Login</h1></center>
+    <form action="#" method="post">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username"><br><br>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password"><br><br>
+      <input type="submit" value="Submit">
+      <p>Don't have an account? <a href="{{url_for('register')}}">Register here</a></p>
+    </form>
+  </body>
+</html>
+<script>
+</script>

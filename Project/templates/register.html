@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Registration Page</title>
+<style>
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+</style>
+
+</head>
+<body>
+<form method="POST">
+<h2>Registration Form</h2>
+<label for="name">Name:</label>
+<input type="text" id="name" name="name"><br><br>
+<label for="email">Email:</label>
+<input type="email" id="email" name="email"><br><br>
+<label for="phone">Phone:</label>
+<input type="tel" id="phone" name="phone"><br><br>
+<label for="password">Password:</label>
+<input type="password" id="password" name="password"><br><br>
+<label for="type">Type:</label>
+<select id="type" name="type" onchange="showFields()">
+  <option value="select">select</option>
+<option value="agent">Agent</option>
+<option value="renter">Prospective Renter</option>
+</select><br><br>
+
+<div id="agentFields" style="display:none;">
+<label for="agency">Agency:</label>
+<input type="text" id="agency" name="agency"><br><br>
+</div>
+<div id="renterFields" style="display:none;">
+
+<label for="location">location:</label>
+<input type="text" id="location" name="location"><br><br>
+<label for="budget">Budget:</label>
+<input type="number" id="budget" name="budget"><br><br>
+<label for="movein">Move-in Date:</label>
+<input type="date" id="movein" name="movein"><br><br>
+</div>
+<input type="submit" value="Register">
+<p>Already have an account? <a href="{{url_for('login')}}">Login</a></p>
+</form>
+
+<script>
+function showFields() {
+var type = document.getElementById("type").value;
+var agentFields = document.getElementById("agentFields");
+var renterFields = document.getElementById("renterFields");
+
+if (type == "agent") {
+agentFields.style.display = "block";
+renterFields.style.display = "none";
+}
+else if (type == "renter") {
+agentFields.style.display = "none";
+renterFields.style.display = "block";
+}
+else {
+agentFields.style.display = "none";
+renterFields.style.display = "none";
+}
+}
+</script>
+
+</body>
+</html>
