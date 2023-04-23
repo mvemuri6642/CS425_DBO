@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Book Now</title>
+    <style>
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f5f5f5;
+			color: #333;
+		}
+
+		h1 {
+			text-align: center;
+			font-size: 36px;
+			margin-top: 40px;
+		}
+
+		h2 {
+			font-size: 24px;
+			margin-top: 20px;
+		}
+
+		p {
+			font-size: 18px;
+			margin-top: 30px;
+		}
+
+		ul {
+			list-style-type: none;
+			margin-left: 0;
+			padding-left: 0;
+			font-size: 16px;
+			margin-top: 10px;
+		}
+
+		li {
+			margin-bottom: 10px;
+		}
+
+		label {
+			display: block;
+			font-size: 16px;
+			margin-top: 20px;
+		}
+
+		input, textarea {
+			display: block;
+			width: 100%;
+			padding: 10px;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			font-size: 16px;
+			margin-top: 5px;
+			box-sizing: border-box;
+		}
+
+		input[type="submit"] {
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			cursor: pointer;
+			padding: 10px 20px;
+			margin-top: 20px;
+			border-radius: 5px;
+			font-size: 16px;
+		}
+
+		input[type="submit"]:hover {
+			background-color: #3e8e41;
+		}
+
+		.house-info {
+			display: inline-block;
+			width: 45%;
+			float: left;
+		}
+
+		.billing-info {
+			display: inline-block;
+			width: 45%;
+			float: right;
+		}
+	</style>
+    <script>
+        function checkAddressInput() {
+          var addressSelect = document.getElementById("address-select");
+          var newAddressInput = document.getElementById("new-address-input");
+          
+          if (addressSelect.value === "new-address") {
+            newAddressInput.style.display = "block";
+            newAddressInput.querySelector("input").required = true;
+          } else {
+            newAddressInput.style.display = "none";
+            newAddressInput.querySelector("input").required = false;
+          }
+        }
+        </script>
+</head>
+<body>
+    
+	<h1>Book Now</h1>
+    <div class="house-info">
+        <p>Property Information:</p>
+        <ul>
+            <li>Property Type: {{ data[1]}}</li>
+            <div id="labels1" style="display:none;">
+                <li>Rooms: {{ ind[0]}}</li>
+                <li>Sq.Ft: {{ ind[1]}}</li>
+            </div>
+            <div id="labels2" style="display:none;">
+                <li>Sq.Ft: {{ ind[0]}}</li>
+                <li>Building Type: {{ ind[1]}}</li>
+            </div>
+            <li>Location: {{ data[2] }}</li>
+            <li>City: {{ data[3] }}</li>
+            <li>Address: {{ data[4] }}</li>
+            <li>Price: {{ data[5] }}</li>
+            <li>Description: {{ data[6] }}</li>
+            <li>Move-in: {{data[7] }}</li>
+        </ul>
+    </div>
+    <div class="billing-info">
+	<form action={{url_for('payment',id=data[0],email=email,type=data[1])}} method="POST">
+		<h2>Billing Information:</h2>
+		<label for="name">Name:</label>
+		<input type="text" name="name" ><br>
+
+		<label for="email">Email:</label>
+		<input type="email" name="email" ><br>
+
+        <label for="address">Address:</label>
+        <select name="address-select" id="address-select"  onchange="checkAddressInput()">
+          <option value="select">Select an address...</option>
+          {%for row in address%}
+                    <option value=row[1]>{{row[2]+' '+row[3]+' '~row[4]~' '+row[5]+' '+row[6]+' '+row[7]}}</option>
+		    {%endfor%}
+          <option value="new-address">New Address</option>
+        </select>
+        <div id="new-address-input" style="display:none;">
+            
+            <label for="new-address-line-1">Address Line 1:</label>
+            <input type="text" name="new-address-line-1" id="new-address-line-1" >
+            
+            <label for="new-address-line-2">Address Line 2:</label>
+            <input type="text" name="new-address-line-2" id="new-address-line-2">
+            
+            <label for="new-address-postal-code">Postal Code:</label>
+            <input type="text" name="new-address-postal-code" id="new-address-postal-code" >
+            
+            <label for="new-address-city">City:</label>
+            <input type="text" name="new-address-city" id="new-address-city" >
+            
+            <label for="new-address-state">State:</label>
+            <input type="text" name="new-address-state" id="new-address-state" >
+            
+            <label for="new-address-country">Country:</label>
+            <input type="text" name="new-address-country" id="new-address-country" >
+          </div>
+
+		<label for="credit_card">Credit Card Number:</label>
+		<input type="text" name="credit_card" pattern="[0-9]+" maxlength="16"><br>
+
+		<label for="expiration">Expiration Date:</label>
+		<input type="text" name="expiration" ><br>
+
+        <label for="cvv">CVV:</label>
+		<input type="password" name="cvv" ><br>
+
+		<input type="hidden" name="house_id" value="{{ data[0] }}">
+		<input type="submit" value="Buy">
+	</form>
+</div>
+</body>
+<script>
+        const label1div=document.getElementById('labels1');
+        const label2div=document.getElementById('labels2');
+        
+        const type_="{{data[1]}}";
+        console.log(label2div);
+        if(type_=='house' || type_=='apartment'){
+            label1div.style.display='block';
+            label2div.style.display='none';
+        }
+        else{
+            
+            label2div.style.display='block';
+            label1div.style.display='none';
+        }
+</script>
+</html>

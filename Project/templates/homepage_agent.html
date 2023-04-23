@@ -13,6 +13,35 @@
 				document.getElementById("post_form_button").innerHTML = "Close Form";
 			}
 		}
+        function showFields() {
+        var type = document.getElementById("type").value;
+        var houseFields = document.getElementById("houseFields");
+        var apartmentFields = document.getElementById("apartmentFields");
+        var buildingFields = document.getElementById("buildingFields");
+
+        if (type == "house") {
+            houseFields.style.display = "block";
+            apartmentFields.style.display = "none";
+            buildingFields.style.display="none"
+        }
+        else if (type == "apartment") {
+            houseFields.style.display = "none";
+            buildingFields.style.display="none"
+            apartmentFields.style.display = "block";
+        }
+        else if (type == "commercial_building") {
+            houseFields.style.display = "none";
+            apartmentFields.style.display = "none";
+            buildingFields.style.display="block"
+            
+        }
+        else {
+        houseFields.style.display = "none";
+        apartmentFields.style.display = "none";
+        buildingFields.style.display="none"
+        }
+        }
+
 	</script>
     <style>
 		#post_form {
@@ -66,25 +95,64 @@
     </nav>
 	<center><h1>Welcome {{data}}</h1></center>
     <button id="post_form_button" onclick="showForm()">Post Property</button>
-	<form id = "post_form" method="POST">
+	<form id = "post_form" action={{url_for('submit_ad',email=email)}} method="POST">
 		<label for="property_type">Property Type:</label>
-		<input type="text" id="property_type" name="property_type" required><br><br>
+		<!-- <input type="text" id="property_type" name="property_type" required><br><br> -->
+        <select id="type" name="type" onchange="showFields()">
+            <option value="select">select</option>
+          <option value="house">House</option>
+          <option value="apartment">Apartment</option>
+          <option value="commercial_building">Building</option>
+        </select><br><br>
+
+        <div id="houseFields" style="display:none;">
+            <label for="Rooms">Rooms:</label>
+            <input type="text" id="rooms" name="rooms"><br><br>
+            <label for="sft">Sq.Ft:</label>
+            <input type="text" id="sft" name="sft"><br><br>
+        </div>
+        <div id="apartmentFields" style="display:none;">
+            
+            <label for="Rooms">Rooms:</label>
+            <input type="text" id="rooms_apt" name="rooms_apt"><br><br>
+            <label for="sft">Sq.Ft:</label>
+            <input type="text" id="sft_apt" name="sft_apt"><br><br>
+        </div>
+
+        <div id="buildingFields" style="display:none;">
+            
+            <!-- <label for="location">location:</label>
+            <input type="text" id="location" name="location"><br><br> -->
+            <label for="build_type">Building Type:</label>
+            <input type="text" id="build_type" name="build_type"><br><br>
+            <label for="sft">Sq.Ft:</label>
+            <input type="text" id="sft_build" name="sft_build"><br><br>
+        </div>
+
+        <label for="location">Location:</label>
+		<input type="text" id="location" name="location" required><br><br>
 
 		<label for="address">Address:</label>
 		<input type="text" id="address" name="address" required><br><br>
 
+        <label for="city">City:</label>
+		<input type="text" id="city" name="city" required><br><br>
+
 		<label for="price">Price:</label>
 		<input type="number" id="price" name="price" required><br><br>
 
-		<label for="bedrooms">Bedrooms:</label>
-		<input type="number" id="bedrooms" name="bedrooms" required><br><br>
+		<!-- <label for="bedrooms">Bedrooms:</label>
+		<input type="number" id="bedrooms" name="bedrooms" required><br><br> -->
 
-		<label for="bathrooms">Bathrooms:</label>
-		<input type="number" id="bathrooms" name="bathrooms" required><br><br>
+		<!-- <label for="bathrooms">Bathrooms:</label>
+		<input type="number" id="bathrooms" name="bathrooms" required><br><br> -->
 
 		<label for="description">Description:</label>
 		<textarea id="description" name="description" required></textarea><br><br>
-
+        
+        <label for="movein">Move-in Date:</label>
+        <input type="date" id="movein" name="movein"><br><br>
+        
 		<input type="submit" value="Post Property">
         
 	</form>

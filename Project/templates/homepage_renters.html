@@ -62,7 +62,7 @@
 	
 
 	<main>
-		<h2>List of Available Houses</h2>
+		<h2>List of Available Properties</h2>
 		<table>
 			<thead>
 				<tr>
@@ -88,7 +88,7 @@
 						<td>{{row[6]}}</td>
 						<td>{{row[7]}}</td>
 						<td>{{row[8]}}</td>
-						<td><button onclick="bookNow(1)">Book Now</button></td>
+						<td><button onclick="window.location='{{ url_for('book_now', id=row[1],email=email)}}'">Book Now</button></td>
 					</tr>
 
 				{%endfor%}
@@ -104,3 +104,8 @@
 	
 	<script>
 		function bookNow(houseId) {
+
+			console.log(houseId);
+		}
+	</script>
+		

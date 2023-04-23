@@ -69,14 +69,14 @@ def register():
 
 @app.route('/<email>')
 def renter(email):
-    query_property='select * from property'
+    query_property='select * from property where available=1'
     mycursor.execute(query_property)
     data = mycursor.fetchall()
     query_bookings='select * from bookingrecords where emailID=%s'
     mycursor.execute(query_bookings,[email])
     bookings=mycursor.fetchall()
     print(bookings)
-    return render_template("homepage_renters.html",data=data,bookings=bookings)
+    return render_template("homepage_renters.html",data=data,bookings=bookings,email=email)
 
 @app.route('/agent<email>')
 def agent(email):
@@ -97,5 +97,121 @@ def ads(email):
     ads=mycursor.fetchall()
     return render_template("ads.html",ads=ads)
 
+@app.route('/success<email>')
+def success(email):
+
+    return '<center><h1>Success!</h1></center>'
+
+@app.route('/submit_ad<email>',methods=['POST','GET'])
+def submit_ad(email):
+    if(request.method=="POST"):
+        # mydb = mysql.connector.connect(host="localhost",user="root",password="manu",database="manohar")
+        # mycursor = mydb.cursor()
+        property_type=request.form["type"]
+        location=request.form["location"]
+        address=request.form["address"]
+        city=request.form['city']
+        price=request.form['price']
+        description=request.form['description']
+        # date=request.form['date']
+        query_house_apartment='insert into property(emailID,property_type,location,city,address,price,description,availability) values(%s,%s,%s,%s,%s,%s,%s,%s)'
+        mycursor.execute(query_house_apartment,(email,property_type,location,city,address,price,description,'2022-02-02'))
+        if(property_type=='house' or property_type=='apartment'):
+
+            if(property_type=='house'):
+                rooms_no=request.form["rooms"]
+                sft=request.form["sft"]
+                houseID=mycursor.lastrowid
+                query_house2='insert into houses values(%s,%s,%s)'
+                mycursor.execute(query_house2,(houseID,rooms_no,sft))
+                mydb.commit()
+                return redirect(url_for('success',email=email))
+            else:
+                rooms_no=request.form["rooms_apt"]
+                sft=request.form["sft_apt"]
+                apartmentID=mycursor.lastrowid
+                query_apartment='insert into apartments(apartmentID,rooms,sft) values(%s,%s,%s)'
+                mycursor.execute(query_apartment,(apartmentID,rooms_no,sft))
+                mydb.commit()
+                return redirect(url_for('success',email=email))
+        elif(property_type=='commercial_building'):
+            build_type=request.form["build_type"]
+            sft=request.form["sft_build"]
+            buildingID=mycursor.lastrowid
+            query_building='insert into commercial_building values(%s,%s,%s)'
+            mycursor.execute(query_building,(buildingID,sft,build_type))
+            mydb.commit()
+            return redirect(url_for('success',email=email))
+        else:
+            return redirect(url_for('agent',email=email))
+    else:
+        return redirect(url_for('agent',email=email))
+    
+@app.route('/book_now/<id>/<email>')
+def book_now(id,email):
+    query_retrieve_book='select propertyID,property_type,location,city,address,price,description,availability from property where propertyID=%s'
+    mycursor.execute(query_retrieve_book,(id,))
+    data=mycursor.fetchone()
+    type=data[1]
+    query_address='select * from address where emailID=%s'
+    mycursor.execute(query_address,(email,))
+    address=mycursor.fetchall()
+    if(type=='house'):
+        query_ind='select rooms,sft from houses where houseID=%s'
+        mycursor.execute(query_ind,(id,))
+        house_data=mycursor.fetchone()
+        # return f'<h1>{data,house_data}</h1>'
+        return render_template('book_now.html', data=data,ind=house_data,address=address,email=email)
+    elif(type=='apartment'):
+        query_ind='select rooms,sft from apartments where apartmentID=%s'
+        mycursor.execute(query_ind,(id,))
+        apartment_data=mycursor.fetchone()
+        return render_template('book_now.html', data=data,ind=apartment_data,address=address,email=email)
+    else:
+        query_ind='select sft,type from commercial_building where buildingID=%s'
+        mycursor.execute(query_ind,(id,))
+        building_data=mycursor.fetchone()
+        return render_template('book_now.html', data=data,email=email,ind=building_data,address=address)
+
+@app.route('/payment<id>/<email>/<type>',methods=['POST','GET'])
+def payment(id,email,type):
+    if(request.method=="POST"):
+        
+        name=request.form["name"]
+        address=request.form["address-select"]
+        card=request.form['credit_card']
+        expiry=request.form['expiration']
+        cvv=request.form['cvv']
+
+        query_card='select * from creditcard_information where Card_Number=%s'
+        mycursor.execute(query_card,(card,))
+        result = mycursor.fetchone()
+        if (not result):
+            query_card_insert='insert into creditcard_information values(%s,%s,%s,%s,%s)'
+            mycursor.execute(query_card_insert,(email,card,'2022-02-02',name,cvv))
+        if(address=='new-address'):
+            line1=request.form['new-address-line-1']
+            line2=request.form['new-address-line-2']
+            postal_code=request.form['new-address-postal-code']
+            city=request.form['new-address-city']
+            state=request.form['new-address-state']
+            country=request.form['new-address-country']
+            query_address_insert='insert into address(emailID,line1,line2,postal_code,city,state,country)values(%s,%s,%s,%s,%s,%s,%s)'
+            mycursor.execute(query_address_insert,(email,line1,line2,postal_code,city,state,country))        
+            mydb.commit()
+        
+        query_booking_insert='insert into bookingrecords(emailID,propertyID,creditCard) values(%s,%s,%s)'
+        mycursor.execute(query_booking_insert,(email,id,card))
+
+        query_update_property='UPDATE property SET available = 0 where propertyID=%s'
+        mycursor.execute(query_update_property,(id,))
+        mydb.commit()
+
+
+    else:
+        return redirect(url_for('agent',email=email))
+
+
+    return f'<h1>{email}</h1>'
 if __name__=="__main__":
     app.run(debug=True)
