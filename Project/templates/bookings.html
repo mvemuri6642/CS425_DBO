@@ -25,19 +25,32 @@
 				<thead>
 					<tr>
 						<th>Booking ID</th>
-						<th>Email</th><td></td><td></td>
-						<th>Property ID</th>
-						<th>Credit Card</th>
+						<th>Property Type</th><td></td><td></td>
+						<th>Location</th>
+						<th>City</th>
+						<th>Address</th>
+						<th>Price</th>
+						<th>Description</th>
+						<th>Availability</th>
+						<th>Crimerate</th>
+						<th>Nearby Schools</th>
+
 					</tr>
 				</thead>
 				
 				<tbody>
 					{%for row in data%}
 						<tr>
-							<td>{{row[0]}}</td>
-							<td>{{row[1]}}</td><td></td><td></td>
-							<td>{{row[2]}}</td>
+							<td>{{row[1]}}</td>
+							<td>{{row[2]}}</td><td></td><td></td>
 							<td>{{row[3]}}</td>
+							<td>{{row[4]}}</td>
+							<td>{{row[5]}}</td>
+							<td>{{row[6]}}</td>
+							<td>{{row[7]}}</td>
+							<td>{{row[8]}}</td>
+							<td>{{row[9]}}</td>
+							<td>{{row[10]}}</td>
 						</tr>
 					{%endfor%}
 				</tbody>

@@ -25,15 +25,16 @@ def login():
     if(request.method=="POST"): 
         username=request.form["username"]
         password=request.form['password']
-
-        mycursor.execute("SELECT type FROM users WHERE email=%s AND password=%s", (username, password))
+        print(username,password)
+        mycursor.execute("SELECT type FROM users WHERE email=%s && password=%s", (username, password))
         # print("<h1>hi</h1>")
         result = mycursor.fetchone()
         if result==('perspective_renter',):
             return redirect(url_for("renter",email=username))
-        else:
+        elif result== ('agent',):
             return redirect(url_for("agent",email=username))
-        print(result)
+        else:
+            return '<h1>Wrong Username or Password</h1>'
     else:
         return render_template("index.html")
 @app.route("/register",methods=['POST','GET'])
@@ -56,6 +57,7 @@ def register():
             mycursor.execute(query_users,(name,email,password,'perspective_renter'))
             mycursor.execute(query_renters, (email, name,movein,location,budget))
             mydb.commit()
+            return redirect(url_for('login'))
         else:
             agency=request.form['agency']
             query_users='insert into users values(%s,%s,%s,%s)'
@@ -63,6 +65,7 @@ def register():
             mycursor.execute(query_users,(name,email,password,'agent'))
             mycursor.execute(query_agents,(email,name,'emp',agency,phone))
             mydb.commit()
+            return redirect(url_for('login'))
     else:
         return render_template("register.html")
 
@@ -74,9 +77,10 @@ def renter(email):
     data = mycursor.fetchall()
     query_bookings='select * from bookingrecords where emailID=%s'
     mycursor.execute(query_bookings,[email])
+    bookings=[' ']
     bookings=mycursor.fetchall()
     print(bookings)
-    return render_template("homepage_renters.html",data=data,bookings=bookings,email=email)
+    return render_template("homepage_renters.html",data=data,email=email)
 
 @app.route('/agent<email>')
 def agent(email):
@@ -86,8 +90,16 @@ def agent(email):
 
 @app.route('/bookings<data>')
 def bookings(data):
-    data=eval(data)
-    return render_template("bookings.html",data=data)
+
+    # data=eval(data)
+    query_bookings='select bookingrecords.emailID,BookingID,property_type, location, city,address,price,description,availability,crimerate,nearby_schools from bookingrecords inner join property on property.propertyID=bookingrecords.propertyID having emailID=%s'
+    mycursor.execute(query_bookings,(data,))
+    data=mycursor.fetchall()
+    if(data):
+
+        return render_template("bookings.html",data=data)
+    else:
+        return f'<h1>None</h1>'
 
 
 @app.route('/ads<email>')
@@ -113,9 +125,11 @@ def submit_ad(email):
         city=request.form['city']
         price=request.form['price']
         description=request.form['description']
+        school=request.form['school']
+        crimerate=request.form['crimerate']
         # date=request.form['date']
-        query_house_apartment='insert into property(emailID,property_type,location,city,address,price,description,availability) values(%s,%s,%s,%s,%s,%s,%s,%s)'
-        mycursor.execute(query_house_apartment,(email,property_type,location,city,address,price,description,'2022-02-02'))
+        query_house_apartment='insert into property(emailID,property_type,location,city,address,price,description,availability,available,crimerate,nearby_schools) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        mycursor.execute(query_house_apartment,(email,property_type,location,city,address,price,description,'2022-02-02',1,crimerate,school))
         if(property_type=='house' or property_type=='apartment'):
 
             if(property_type=='house'):
@@ -149,7 +163,7 @@ def submit_ad(email):
     
 @app.route('/book_now/<id>/<email>')
 def book_now(id,email):
-    query_retrieve_book='select propertyID,property_type,location,city,address,price,description,availability from property where propertyID=%s'
+    query_retrieve_book='select propertyID,property_type,location,city,address,price,description,availability,crimerate,nearby_schools from property where propertyID=%s'
     mycursor.execute(query_retrieve_book,(id,))
     data=mycursor.fetchone()
     type=data[1]
@@ -211,7 +225,18 @@ def payment(id,email,type):
     else:
         return redirect(url_for('agent',email=email))
 
+    return f'<h1>Success</h1>'
 
-    return f'<h1>{email}</h1>'
+
+@app.route('/rewards<email>')
+def rewards(email):
+    query_rewards='select bookingrecords.emailID, sum(price) as rewards from bookingrecords inner join property on bookingrecords.propertyID = property.propertyID group by emailID having emailID=%s'
+    mycursor.execute(query_rewards,(email,))
+    rewards=mycursor.fetchone()
+    if(rewards):
+        return f'<h1>Currently You have "{rewards[1]}" points</h1>'
+    else:
+        return f'<h1>None</h1>'
+
 if __name__=="__main__":
     app.run(debug=True)

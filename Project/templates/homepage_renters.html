@@ -55,7 +55,8 @@
 				<li><a href="#">Contact</a></li>
 				<li><a href="#">Logout</a></li>
 				<br></br>
-				<li><a href="{{url_for('bookings',data=bookings)}}">Bookings</a></li>
+				<li><a href="{{url_for('rewards',email=email)}}">Rewards</a></li>
+				<li><a href="{{url_for('bookings',data=email)}}">Bookings</a></li>
 			</ul>
 		</nav>
 	</header>
@@ -73,7 +74,10 @@
                     <th> Address</th>
                     <th>Price</th>
 					<th>Discription</th>
+					<th>Crimerate</th>
+					<th>Nearby Schools</th>
 					<th>Availability</th>
+
 				</tr>
 			</thead>
 			
@@ -87,6 +91,8 @@
 						<td>{{row[5]}}</td>
 						<td>{{row[6]}}</td>
 						<td>{{row[7]}}</td>
+						<td>{{row[11]}}</td>
+						<td>{{row[12]}}</td>
 						<td>{{row[8]}}</td>
 						<td><button onclick="window.location='{{ url_for('book_now', id=row[1],email=email)}}'">Book Now</button></td>
 					</tr>
