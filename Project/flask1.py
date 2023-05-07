@@ -128,7 +128,7 @@ def submit_ad(email):
         school=request.form['school']
         crimerate=request.form['crimerate']
         # date=request.form['date']
-        query_house_apartment='insert into property(emailID,property_type,location,city,address,price,description,availability,available,crimerate,nearby_schools) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        query_house_apartment='insert into property(emailID,property_type,location,city,address,price,description,availability,available,crimerate,nearby_schools) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
         mycursor.execute(query_house_apartment,(email,property_type,location,city,address,price,description,'2022-02-02',1,crimerate,school))
         if(property_type=='house' or property_type=='apartment'):
 
